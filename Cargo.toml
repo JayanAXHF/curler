@@ -2,6 +2,14 @@
 name = "curler"
 version = "0.1.0"
 edition = "2021"
+authors = ["JayanAXHF"]
+description = "A simple rust programme to bulk-curl documents"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/JayanAXHF/curler"
+repository = "https://github.com/JayanAXHF/curler"
+keywords = ["curl", "download", "bulk", "files"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 serde = { version = "1.0.218", features = ["serde_derive"] }

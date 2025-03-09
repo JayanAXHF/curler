@@ -1,7 +1,9 @@
 # Installation
 Prebuilt binaries can be found [here](https://github.com/JayanAXHF/curler/releases).
 ## Cargo
-The program will soon be an installable binary from crates.io
+```
+cargo install curler
+```
 ## Building from source
 
 ```sh

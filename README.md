@@ -14,7 +14,8 @@ To run, run `cargo run`
 ## Details
 1. Create a `.json` file. For ease of use, create a `paths.json` file in the same directory as the executable.
 2. The format for the `.json` file is as follows:
-   ```json
+
+```json
 {
 	"files": [
 		{
@@ -25,8 +26,7 @@ To run, run `cargo run`
 			"name": "worksheet_ak.pdf",
 			"url": "https://sample.gg/sample"
 		}
-
-		// Rest of the files
+		...
 	]
 }
 ```

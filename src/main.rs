@@ -1,8 +1,7 @@
+use clap::Parser;
 use std::cmp::min;
-use std::io;
-use std::io::Write;
 use std::process;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::thread;
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -15,26 +14,30 @@ struct File {
     name: String,
     url: String,
 }
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// The subject, or directory, to download the files to
+    //    #[clap(short, long, value_name = "SUBJECT")]
+    subject: Option<String>,
+
+    /// The path to the JSON file containing the URLs to download
+    #[arg(short, long, default_value_t = String::from("paths.json"))]
+    file_path: String,
+
+    /// Maximun number of threads to use
+    #[arg(short, long, default_value_t = 4)]
+    max_threads: usize,
+}
 
 fn main() {
-    let mut file_path = String::new();
-    print!("Enter the path to the JSON file:");
-    io::stdout().flush().expect("Unable to flush stdout");
-    let _ = io::stdin().read_line(&mut file_path);
-    if file_path.trim().is_empty() {
-        println!("No file path provided, using default paths.json");
-        file_path = String::from("paths.json");
-    }
-
-    let mut subject = String::new();
-    print!("Subject: ");
-    io::stdout().flush().expect("Unable to flush stdout");
-    let _ = io::stdin().read_line(&mut subject);
-    let mut subject = subject.trim();
-    if subject.is_empty() {
-        println!("No subject provided, using ./");
-        subject = ".";
-    }
+    let args = Args::parse();
+    let subject = match args.subject {
+        Some(subject) => subject,
+        None => ".".to_string(),
+    };
+    let file_path = args.file_path;
+    let max_threads = args.max_threads;
 
     let raw_json_result = std::fs::read_to_string(file_path.trim());
     let mut raw_json = String::new();
@@ -49,7 +52,7 @@ fn main() {
     let _ = std::fs::create_dir(subject.trim());
     let num_files = parsed_json.files.len();
     let mut handles = vec![];
-    let num_threads = min(num_files, 4);
+    let num_threads = min(num_files, max_threads);
     let files_per_thread = (num_files + num_threads - 1).div_ceil(num_threads); // Ceiling division
 
     let subject = Arc::new(subject.to_string());

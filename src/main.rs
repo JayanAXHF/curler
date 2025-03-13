@@ -1,6 +1,6 @@
 use clap::{Parser, ValueEnum};
 use std::cmp::min;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Write};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
@@ -66,6 +66,11 @@ fn main() {
         raw_content.push_str(&file);
     } else {
         eprintln!("Unable to read {file_path} file. Check if the file exists, and check if the filename is correct");
+        print!("Press any key to exit...");
+        std::io::stdout().flush().expect("Unable to flush stdout");
+        std::io::stdin()
+            .read_line(&mut String::new())
+            .expect("Unable to read line");
         return;
     }
 
@@ -114,6 +119,11 @@ fn main() {
     for handle in handles {
         handle.join().unwrap();
     }
+    print!("Finished downloading files. Press any key to exit...");
+    std::io::stdout().flush().expect("Unable to flush stdout");
+    std::io::stdin()
+        .read_line(&mut String::new())
+        .expect("Unable to read line");
 }
 
 use std::process::{Command, Stdio};
@@ -137,7 +147,7 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
     // Process stderr for progress information
     if let Some(stderr) = child.stderr.take() {
         let reader = BufReader::new(stderr);
-        for line in reader.lines().flatten() {
+        for line in reader.lines().map_while(Result::ok) {
             let _lock = stdout_mutex.lock().unwrap();
             println!("{:-^50}", "");
             println!("Thread {}", thread_id);
@@ -149,7 +159,7 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
     // Process any stdout (likely very little or none)
     if let Some(stdout) = child.stdout.take() {
         let reader = BufReader::new(stdout);
-        for line in reader.lines().flatten() {
+        for line in reader.lines().map_while(Result::ok) {
             let _lock = stdout_mutex.lock().unwrap();
             println!("{:-^50}", "");
             println!("Thread {}", thread_id);

@@ -18,7 +18,7 @@ struct File {
 #[command(version, about, long_about = None)]
 struct Args {
     /// The subject, or directory, to download the files to
-    #[clap(short, long, value_name = "SUBJECT")]
+    #[clap(value_name = "SUBJECT")]
     subject: Option<String>,
 
     /// The path to the JSON file containing the URLs to download
@@ -116,33 +116,11 @@ fn main() {
     }
 }
 
-//fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: usize) {
-//    println!("\nDownloading {}", file_name);
-//    let mut child = process::Command::new("curl")
-//        .arg("-o")
-//        .arg(file_name)
-//        .arg(url)
-//        .spawn()
-//        .expect("Unable to spawn child process");
-//    let stdout = child.stdout.take().expect("Failed to capture stdout");
-//    let reader = BufReader::new(stdout);
-//    for line in reader.lines() {
-//        // Protect stdout with mutex to prevent interleaving
-//        let _lock = stdout_mutex.lock().unwrap();
-//        println!("Thread {}: {}", thread_id, line.unwrap());
-//    }
-//    let status = child.wait().expect("Unable to wait for child process");
-//    if !status.success() {
-//        println!("Failed to download file");
-//    }
-//    println!("\n")
-//}
 use std::process::{Command, Stdio};
 
 fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: usize) {
     // Get lock before initial message
     let _lock = stdout_mutex.lock().unwrap();
-    println!("\nDownloading {}", file_name);
     // Release lock by dropping _lock
     drop(_lock);
 
@@ -161,7 +139,9 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
         let reader = BufReader::new(stderr);
         for line in reader.lines().flatten() {
             let _lock = stdout_mutex.lock().unwrap();
+            println!("{:-^50}", "");
             println!("Thread {}: {}", thread_id, line);
+            println!("{:-^50}", "");
         }
     }
 
@@ -170,7 +150,9 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
         let reader = BufReader::new(stdout);
         for line in reader.lines().flatten() {
             let _lock = stdout_mutex.lock().unwrap();
+            println!("{:-^50}", "");
             println!("Thread {}: {}", thread_id, line);
+            println!("{:-^50}", "");
         }
     }
 
@@ -186,7 +168,6 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
             thread_id, file_name
         );
     }
-    println!("")
 }
 
 fn json_parser(json: &str) -> Vec<File> {

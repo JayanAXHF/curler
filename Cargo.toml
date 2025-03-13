@@ -1,6 +1,6 @@
 [package]
 name = "curler"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 authors = ["JayanAXHF"]
 description = "A simple rust programme to bulk-curl documents"

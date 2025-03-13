@@ -140,7 +140,8 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
         for line in reader.lines().flatten() {
             let _lock = stdout_mutex.lock().unwrap();
             println!("{:-^50}", "");
-            println!("Thread {}: {}", thread_id, line);
+            println!("Thread {}", thread_id);
+            println!("{}", line);
             println!("{:-^50}", "");
         }
     }
@@ -151,7 +152,8 @@ fn curl(url: &str, file_name: &str, stdout_mutex: &Arc<Mutex<()>>, thread_id: us
         for line in reader.lines().flatten() {
             let _lock = stdout_mutex.lock().unwrap();
             println!("{:-^50}", "");
-            println!("Thread {}: {}", thread_id, line);
+            println!("Thread {}", thread_id);
+            println!("{}", line);
             println!("{:-^50}", "");
         }
     }

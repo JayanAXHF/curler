@@ -199,6 +199,5 @@ fn text_parser(text: &str) -> Vec<File> {
             files.push(file);
         }
     }
-    dbg!(&files);
     files
 }
